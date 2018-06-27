@@ -16,6 +16,8 @@ RUN yum install -y epel-release && \
   curl -s -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py && \
   python36 /tmp/get-pip.py
 
+RUN echo "alias python=python36" >> ~/.bashrc
+
 WORKDIR /data/module
 
 COPY bootstrap.sh /etc/bootstrap.sh
