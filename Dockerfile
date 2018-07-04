@@ -17,7 +17,7 @@ RUN yum install -y epel-release && \
   python36 /tmp/get-pip.py
 
 RUN echo "alias python=python36" >> ~/.bashrc
-RUN echo "alias pm='python36 /data/module/main.py'" >> ~/.bashrc
+RUN echo "alias pm='python36 /data/modugle/main.py'" >> ~/.bashrc
 
 WORKDIR /data/module
 
