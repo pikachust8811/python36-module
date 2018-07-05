@@ -5,6 +5,7 @@ LABEL maintainer="Lish" email="pikachust8811@gmail.com"
 USER root
 
 RUN yum install -y which
+RUN yum install -y git
 
 RUN yum install -y java-1.8.0-openjdk-devel.x86_64 && \
   ln -s $(dirname $(dirname $(dirname $(readlink -f /usr/bin/java)))) /usr/local/java
