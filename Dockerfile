@@ -1,26 +1,48 @@
-FROM centos:7
+FROM ubuntu:18.04
 
-LABEL maintainer="Lish" email="pikachust8811@gmail.com"
+LABEL Maintainer="Lish Chen" Email="pikachust8811@gmail.com"
 
-USER root
+# update list
+RUN apt-get update
 
-RUN yum install -y which
-RUN yum install -y git
+# install libact Basic Dependencies Debian (>= 7) / Ubuntu (>= 14.04)
+RUN apt-get install -y \
+  build-essential \
+  gfortran \
+  libatlas-base-dev \
+  liblapacke-dev
 
-RUN yum install -y java-1.8.0-openjdk-devel.x86_64 && \
-  ln -s $(dirname $(dirname $(dirname $(readlink -f /usr/bin/java)))) /usr/local/java
-ENV JAVA_HOME=/usr/local/java \
-  PATH=$PATH:$JAVA_HOME/bin
-
-RUN yum install -y epel-release && \
-  yum install -y python36 && \
+# insstall python 3.6 and pip
+RUN apt-get install -y \
+  curl \
+  python3.6 \
+  python3-dev && \
   curl -s -o /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py && \
-  python36 /tmp/get-pip.py
+  python3.6 /tmp/get-pip.py
 
-RUN echo "alias python=python36" >> ~/.bashrc
-RUN echo "alias pm='python36 /data/module/main.py'" >> ~/.bashrc
+COPY requirements.txt /workspace/requirements.txt
 
-WORKDIR /data/module
+WORKDIR /workspace
+
+# install libact Python dependencies
+RUN pip install -r requirements.txt
+
+# install libact library
+RUN pip install libact
+
+RUN pip install jupyter
+
+RUN jupyter notebook --generate-config && \
+  echo "c.Application.log_level = 'DEBUG'" >> ~/.jupyter/jupyter_notebook_config.py && \
+  echo "c.NotebookApp.ip = '0.0.0.0'" >> ~/.jupyter/jupyter_notebook_config.py && \
+  echo "c.NotebookApp.open_browser = False" >> ~/.jupyter/jupyter_notebook_config.py && \
+  echo "c.NotebookApp.port = 8888" >> ~/.jupyter/jupyter_notebook_config.py && \
+  echo "c.NotebookApp.token = u'JUPYTER_AUTH_TOKEN'" >> ~/.jupyter/jupyter_notebook_config.py && \
+  echo "c.NotebookApp.notebook_dir = '/workspace/jupyter'" >> ~/.jupyter/jupyter_notebook_config.py && \
+  echo "c.FileContentsManager.delete_to_trash = False" >> ~/.jupyter/jupyter_notebook_config.py && \
+  mkdir /workspace/jupyter
+
+COPY ./libact/examples/ /workspace/examples/
 
 COPY bootstrap.sh /etc/bootstrap.sh
 RUN chmod +x /etc/bootstrap.sh

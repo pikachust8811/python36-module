@@ -1,0 +1,17 @@
+version: '3.2'
+
+services:
+  albl:
+    image: pikachust8811/python36:libact
+    tty: true
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_AUTH_TOKEN=password
+    volumes:
+      - type: volume
+        source: jupyter_data
+        target: /data
+
+volumes:
+  jupyter_data:
